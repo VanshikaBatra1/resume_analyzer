@@ -5,7 +5,7 @@ import re
 st.set_page_config(page_title="Smart Resume Analyzer", page_icon="📄", layout="centered")
 
 st.title("📄 Smart Resume Analyzer")
-st.caption("Built by Vanshika 🚀")
+st.caption("Built by Vanshika ")
 
 uploaded_file = st.file_uploader("Upload your Resume (PDF only)", type=["pdf"])
 
