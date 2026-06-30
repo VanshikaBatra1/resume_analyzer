@@ -1,118 +1,47 @@
 import streamlit as st
 import PyPDF2
 
-st.title("AI Resume Analyzer")
+st.set_page_config(page_title="Smart Resume Analyzer", page_icon="📄", layout="centered")
 
-# Job Description Input
-job_description = st.text_area(
-    "Paste Job Description Here (Optional)"
-)
+st.markdown("""
+    <style>
+    .main {
+        background-color: #0f172a;
+        color: white;
+    }
+    .stApp {
+        background-color: #0f172a;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-# Resume Upload
-uploaded_file = st.file_uploader(
-    "Upload Resume",
-    type=["pdf"]
-)
+st.title("📄 Smart Resume Analyzer")
+st.caption("Upload your resume and get instant insights")
 
-if uploaded_file is not None:
+uploaded_file = st.file_uploader("Upload your Resume (PDF only)", type=["pdf"])
 
-    # Read PDF
+if uploaded_file:
+
     pdf_reader = PyPDF2.PdfReader(uploaded_file)
-
     text = ""
 
-    # Extract text from all pages
     for page in pdf_reader.pages:
-        text += page.extract_text()
+        if page.extract_text():
+            text += page.extract_text()
 
-    # Show Resume Content
-    st.subheader("Resume Content")
+    st.success("Resume processed successfully 🚀")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("📌 Resume Preview")
+        st.text_area("", text[:1500], height=400)
+
+    with col2:
+        st.subheader("📊 Quick Info")
+        st.write("✔ PDF uploaded")
+        st.write("✔ Text extracted")
+        st.write("✔ Ready for analysis")
+
+    st.subheader("📄 Full Extracted Text")
     st.write(text)
-
-    # Skills to check
-    skills = [
-        "python",
-        "java",
-        "c",
-        "sql",
-        "machine learning",
-        "data science",
-        "streamlit",
-        "power bi",
-        "excel",
-        "git",
-        "github",
-        "html",
-        "css"
-    ]
-
-    found_skills = []
-
-    # Find skills in resume
-    for skill in skills:
-        if skill.lower() in text.lower():
-            found_skills.append(skill)
-
-    # ATS Score
-    score = len(found_skills) * 7
-
-    if score > 100:
-        score = 100
-
-    st.subheader("ATS Resume Score")
-    st.progress(score)
-    st.success(f"Score: {score}/100")
-
-    # Skills Found
-    st.subheader("Skills Found")
-    for skill in found_skills:
-        st.write("✅", skill.title())
-
-    # Missing Skills
-    missing_skills = [
-        s for s in skills if s not in found_skills
-    ]
-
-    st.subheader("Missing Skills")
-    for skill in missing_skills:
-        st.write("❌", skill.title())
-
-    # Suggestions
-    st.subheader("Suggestions")
-
-    if score < 50:
-        st.warning(
-            "Add more technical skills, projects, GitHub profile and certifications."
-        )
-    elif score < 80:
-        st.info(
-            "Good resume. Add more projects and measurable achievements."
-        )
-    else:
-        st.success(
-            "Excellent resume! Ready for most internship applications."
-        )
-
-    # Job Description Matching
-    if job_description:
-
-        jd_words = job_description.lower().split()
-
-        matching_words = 0
-
-        for word in jd_words:
-            if word in text.lower():
-                matching_words += 1
-
-        match_score = int(
-            (matching_words / len(jd_words)) * 100
-        )
-
-        if match_score > 100:
-            match_score = 100
-
-        st.subheader("Job Match Score")
-        st.progress(match_score)
-        st.success(
-            f"Resume matches {match_score}% of the Job Description"
-        )
